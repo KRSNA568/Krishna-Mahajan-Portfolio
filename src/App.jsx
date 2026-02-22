@@ -7,6 +7,7 @@ import Experiences from "./sections/Experiences";
 import Testimonial from "./sections/Testimonial";
 import Contact from "./sections/Contact";
 import Footer from './sections/Footer';
+import ChatBot from "./components/ChatBot";
 import CursorBall from "./CursorBall";
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
       {/* <Testimonial /> */}
       <Contact />
       <Footer/>
+      <ChatBot />
       {/* <CursorBall/> */}
     </div>
   );
