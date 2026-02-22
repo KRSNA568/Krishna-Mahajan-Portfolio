@@ -16,7 +16,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "https://chatbot-server-production-ef63.up.railway.app";
 
 // Generates a random UUID — used as the session identifier.
 const generateSessionId = () =>
