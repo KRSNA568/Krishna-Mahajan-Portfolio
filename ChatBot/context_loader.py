@@ -19,10 +19,11 @@ import pdfplumber
 # The PDF is in /public/ which is one level up from ChatHOT/.
 
 def load_resume_text() -> str:
-    pdf_path = os.path.join(
-        os.path.dirname(__file__), "..", "public", "Krishna_resume.pdf"
-    )
-    pdf_path = os.path.abspath(pdf_path)
+    # Check same directory first (Docker / deployed), then fall back to ../public/ (local dev)
+    local_path = os.path.join(os.path.dirname(__file__), "Krishna_resume.pdf")
+    fallback_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "public", "Krishna_resume.pdf"))
+
+    pdf_path = local_path if os.path.exists(local_path) else fallback_path
 
     if not os.path.exists(pdf_path):
         return "[Resume PDF not found]"
@@ -31,6 +32,7 @@ def load_resume_text() -> str:
         pages = [page.extract_text() or "" for page in pdf.pages]
 
     return "\n".join(pages).strip()
+
 
 
 # ── 2. Portfolio data ────────────────────────────────────────────────────────
