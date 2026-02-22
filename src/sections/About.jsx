@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Card from "../components/Card";
 import CopyEmailButton from "../components/CopyEmailButton";
-import { Frameworks } from "../components/FrameWorks";
+import { Frameworks } from "../components/Frameworks";
 import ResumeModal from "../components/ResumeModal";
 
 // import { Motion } from "../components/Motion";
