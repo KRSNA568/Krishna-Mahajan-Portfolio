@@ -18,6 +18,7 @@ import os
 import uuid
 from typing import Optional
 
+import motor.motor_asyncio
 from openai import OpenAI
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -31,7 +32,11 @@ load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 if not OPENROUTER_API_KEY:
-    raise RuntimeError("OPENROUTER_API_KEY not set. Add it to ChatHOT/.env")
+    raise RuntimeError("OPENROUTER_API_KEY not set. Add it to ChatBot/.env")
+
+MONGODB_URI = os.getenv("MONGODB_URI")
+if not MONGODB_URI:
+    raise RuntimeError("MONGODB_URI not set. Add it to ChatBot/.env")
 
 # ── OpenRouter client ────────────────────────────────────────────────────────
 # OpenRouter is OpenAI-compatible — we just point the base_url at their API.
@@ -46,6 +51,14 @@ MODEL = "google/gemma-3-4b-it:free"
 # Build system prompt once at startup (reads PDF + portfolio data)
 SYSTEM_PROMPT = build_system_prompt()
 
+# ── MongoDB ───────────────────────────────────────────────────────────────────
+# motor is the async MongoDB driver. The client is created once at module level.
+# DB: portfolio_chatbot  |  Collection: sessions
+# Document shape: { session_id: str, history: [{role, content}, ...] }
+mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
+db = mongo_client["portfolio_chatbot"]
+sessions_col = db["sessions"]
+
 # ── FastAPI app ───────────────────────────────────────────────────────────────
 app = FastAPI(title="Portfolio Chatbot API")
 
@@ -55,11 +68,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ── In-memory session store ───────────────────────────────────────────────────
-# Key  : session_id
-# Value: list of OpenAI-format message dicts {"role": "user"/"assistant", "content": "..."}
-chat_sessions: dict[str, list] = {}
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
@@ -84,10 +92,9 @@ def health_check():
 async def chat(req: ChatRequest):
     session_id = req.session_id or str(uuid.uuid4())
 
-    if session_id not in chat_sessions:
-        chat_sessions[session_id] = []
-
-    history = chat_sessions[session_id]
+    # Load history from MongoDB (or start fresh)
+    doc = await sessions_col.find_one({"session_id": session_id})
+    history: list = doc["history"] if doc else []
 
     try:
         # Gemma via Google AI Studio does not support the "system" role.
@@ -115,10 +122,14 @@ async def chat(req: ChatRequest):
 
         reply_text = response.choices[0].message.content
 
-        # Persist turn to history
+        # Persist turn to MongoDB
         history.append({"role": "user", "content": req.message})
         history.append({"role": "assistant", "content": reply_text})
-        chat_sessions[session_id] = history
+        await sessions_col.update_one(
+            {"session_id": session_id},
+            {"$set": {"history": history}},
+            upsert=True,
+        )
 
         return ChatResponse(reply=reply_text, session_id=session_id)
 
@@ -127,7 +138,7 @@ async def chat(req: ChatRequest):
 
 
 @app.delete("/chat/{session_id}")
-def clear_session(session_id: str):
-    chat_sessions.pop(session_id, None)
+async def clear_session(session_id: str):
+    await sessions_col.delete_one({"session_id": session_id})
     return {"status": "cleared"}
 
