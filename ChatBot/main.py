@@ -68,9 +68,19 @@ app = FastAPI(title="Portfolio Chatbot API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000","http://localhost:5175","https://krishna-mahajan-portfolio-frontend.onrender.com/"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:3000",
+        "https://krishna-mahajan-portfolio-1.onrender.com",
+        "https://krishna-mahajan-portfolio-frontend.onrender.com",
+        "https://portfolio-frontend.onrender.com",
+        "https://krishna-mahajan-portfolio.krishnamahajan568.workers.dev",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=False,
 )
 
 
