@@ -16,8 +16,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-// const API_URL = "http://localhost:8000";
-const API_URL = "https://hypernormal-mahalia-trembly.ngrok-free.dev";
+const API_URL = "http://localhost:8000";
 
 // Generates a random UUID — used as the session identifier.
 const generateSessionId = () =>
@@ -50,7 +49,7 @@ const ChatBot = () => {
   // When widget is closed, clear server-side history to free memory.
   const handleClose = () => {
     setIsOpen(false);
-    fetch(`${API_URL}/chat/${sessionId}`, { method: "DELETE", headers: { "ngrok-skip-browser-warning": "true" } }).catch(() => {});
+    fetch(`${API_URL}/chat/${sessionId}`, { method: "DELETE" }).catch(() => {});
   };
 
   const sendMessage = async () => {
@@ -65,7 +64,7 @@ const ChatBot = () => {
     try {
       const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text, session_id: sessionId }),
       });
 
