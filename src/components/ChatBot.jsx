@@ -16,7 +16,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-const API_URL = "http://localhost:8000";
+// const API_URL = "http://localhost:8000";
+const API_URL = "https://s6x8nz15-8000.inc1.devtunnels.ms/";
 
 // Generates a random UUID — used as the session identifier.
 const generateSessionId = () =>
