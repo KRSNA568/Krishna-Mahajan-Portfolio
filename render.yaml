@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: portfolio-chatbot
+    runtime: python
+    rootDir: ChatBot
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false        # set manually in Render dashboard
+      - key: MONGODB_URI
+        sync: false        # set manually in Render dashboard
+    autoDeploy: true
