@@ -17,7 +17,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 // const API_URL = "http://localhost:8000";
-const API_URL = "https://ngrok.com/r/ai";
+const API_URL = "https://hypernormal-mahalia-trembly.ngrok-free.dev";
 
 // Generates a random UUID — used as the session identifier.
 const generateSessionId = () =>
