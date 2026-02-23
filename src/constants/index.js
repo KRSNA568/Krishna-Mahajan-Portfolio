@@ -12,7 +12,7 @@ export const myProjects = [
     ],
     href: "",
     logo: "",
-    image: "/assets/projects/elearning.jpg",
+    image: "/assets/projects/PHOTO-2025-12-22-15-45-00.jpg",
     tags: [
       {
         id: 1,
@@ -49,7 +49,7 @@ export const myProjects = [
     ],
     href: "",
     logo: "",
-    image: "/assets/projects/auth-system.jpg",
+    image: "public/assets/projects/TalkBridge.jpg",
     tags: [
       {
         id: 1,
