@@ -17,7 +17,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 const API_URL = "http://localhost:8000";
-
+// const API_URL = "https://hypernormal-mahalia-trembly.ngrok-free.dev";
 // Generates a random UUID — used as the session identifier.
 const generateSessionId = () =>
   "session-" + Math.random().toString(36).substring(2, 11);
@@ -78,6 +78,7 @@ const ChatBot = () => {
         {
           role: "model",
           text: "⚠️ Couldn't reach the server. Make sure the FastAPI backend is running on port 8000.",
+
         },
       ]);
     } finally {

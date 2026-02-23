@@ -19,7 +19,7 @@ import uuid
 from typing import Optional
 
 import motor.motor_asyncio
-from openai import OpenAI
+from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,7 +41,7 @@ if not MONGODB_URI:
 # ── OpenRouter client ────────────────────────────────────────────────────────
 # OpenRouter is OpenAI-compatible — we just point the base_url at their API.
 # The model string tells OpenRouter which model to route to.
-client = OpenAI(
+client = AsyncOpenAI(
     api_key=OPENROUTER_API_KEY,
     base_url="https://openrouter.ai/api/v1",
 )
@@ -55,7 +55,11 @@ SYSTEM_PROMPT = build_system_prompt()
 # motor is the async MongoDB driver. The client is created once at module level.
 # DB: portfolio_chatbot  |  Collection: sessions
 # Document shape: { session_id: str, history: [{role, content}, ...] }
-mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
+mongo_client = motor.motor_asyncio.AsyncIOMotorClient(
+    MONGODB_URI,
+    tls=True,
+    tlsAllowInvalidCertificates=True,
+)
 db = mongo_client["portfolio_chatbot"]
 sessions_col = db["sessions"]
 
@@ -64,7 +68,7 @@ app = FastAPI(title="Portfolio Chatbot API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000","https://krishna-mahajan-portfolio.krishnamahajan568.workers.dev/"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -114,7 +118,7 @@ async def chat(req: ChatRequest):
             {"role": "user", "content": req.message},
         ]
 
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=MODEL,
             messages=messages,
             temperature=0.7,
