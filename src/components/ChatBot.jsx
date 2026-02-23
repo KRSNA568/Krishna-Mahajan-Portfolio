@@ -50,7 +50,7 @@ const ChatBot = () => {
   // When widget is closed, clear server-side history to free memory.
   const handleClose = () => {
     setIsOpen(false);
-    fetch(`${API_URL}/chat/${sessionId}`, { method: "DELETE" }).catch(() => {});
+    fetch(`${API_URL}/chat/${sessionId}`, { method: "DELETE", headers: { "ngrok-skip-browser-warning": "true" } }).catch(() => {});
   };
 
   const sendMessage = async () => {
@@ -65,7 +65,7 @@ const ChatBot = () => {
     try {
       const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
         body: JSON.stringify({ message: text, session_id: sessionId }),
       });
 
